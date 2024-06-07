@@ -2,6 +2,7 @@ package telran.java52.person.service;
 
 import java.time.LocalDate;
 
+
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,9 @@ import telran.java52.person.dao.PersonRepository;
 import telran.java52.person.dto.AddressDto;
 import telran.java52.person.dto.ChildDto;
 import telran.java52.person.dto.CityPopulationDto;
-import telran.java52.person.dto.PersonDto;
 import telran.java52.person.dto.EmployeeDto;
+import telran.java52.person.dto.PersonDto;
+
 import telran.java52.person.dto.exceptions.PersonNotFoundException;
 import telran.java52.person.model.Address;
 import telran.java52.person.model.Child;
@@ -26,6 +28,7 @@ public class PersonServiceImpl implements PersonService, CommandLineRunner {
   final PersonRepository personRepository;
   final ModelMapper modelMapper;
   final PersonModelDtoMapper mapper;
+  
   @Transactional
   @Override
   public Boolean addPerson(PersonDto personDto) {
@@ -56,7 +59,7 @@ public class PersonServiceImpl implements PersonService, CommandLineRunner {
     Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException());
     person.setName(name);
    // personRepository.save(person);
-    return modelMapper.map(person, PersonDto.class);
+    return mapper.mapToDto(person);
   }
 
   @Transactional
@@ -99,7 +102,20 @@ public class PersonServiceImpl implements PersonService, CommandLineRunner {
   
     return personRepository.getCitiesPopulation();
   }
-
+  
+  @Override
+  public ChildDto[] findAllChildren() {
+  	  return personRepository.findAllChildren()
+                .map(p-> mapper.mapToDto(p))
+                .toArray(ChildDto[]::new);
+  }
+  
+	@Override
+	public EmployeeDto[] findBySalary(double minSalary, double maxSalary) {
+		return personRepository.findBySalary(minSalary, maxSalary)
+				.map(p->mapper.mapToDto(p))
+				.toArray(EmployeeDto[]::new);
+	}
   @Override
   public void run(String... args) throws Exception {
 	 if (personRepository.count() ==0) {
@@ -113,7 +129,6 @@ public class PersonServiceImpl implements PersonService, CommandLineRunner {
 		 personRepository.save(child);
 		 personRepository.save(employee);
 	 }
-	
-}
+  }
 
 }

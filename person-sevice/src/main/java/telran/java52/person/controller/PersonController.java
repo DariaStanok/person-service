@@ -5,9 +5,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
+import telran.java52.person.dto.ChildDto;
+import telran.java52.person.dto.EmployeeDto;
 import telran.java52.person.dto.PersonDto;
 import telran.java52.person.service.PersonService;
 
@@ -28,4 +31,14 @@ public class PersonController {
 	public PersonDto findPersonById(@PathVariable Integer id) {
 		return personService.findPersonById(id);
 	}
+	
+	@GetMapping("/children")
+	public ChildDto[] findAllChildren()  {
+	    return personService.findAllChildren();
+	}
+	
+	@GetMapping("/employees")
+    public EmployeeDto[] findBySalary(@RequestParam double minSalary, @RequestParam double maxSalary) {
+        return personService.findBySalary(minSalary, maxSalary);
+    }
 }
